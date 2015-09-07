@@ -202,13 +202,14 @@
 
   (ack-segment [_ _ segment-id]
     (when-let [offset (:offset (get @pending-messages segment-id))]
-      (clojure.pprint/pprint ["ACK" (get @pending-messages segment-id)])
+      ;; (clojure.pprint/pprint ["ACK" (get @pending-messages segment-id)])
       (swap! pending-commits conj offset))
     (swap! pending-messages dissoc segment-id))
 
   (retry-segment
     [_ _ segment-id]
     (when-let [msg (get @pending-messages segment-id)]
+      (clojure.pprint/pprint ["RETRY" (get @pending-messages segment-id)])
       (swap! pending-messages dissoc segment-id)
       (>!! read-ch (t/input (java.util.UUID/randomUUID)
                             (:message msg)))))
